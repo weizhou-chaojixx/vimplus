@@ -91,8 +91,10 @@ noremap * *:set hlsearch<cr>
 set nobackup            " 设置不备份
 set noswapfile          " 禁止生成临时文件
 set autoread            " 文件在vim之外修改过，自动重新读入
-set autowrite           " 设置自动保存
+set autowriteall           " 设置自动保存
 set confirm             " 在处理未保存或只读文件的时候，弹出确认
+" Switch buffers in vim without saving to a currently modified file
+set hidden
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 编码设置
@@ -109,9 +111,9 @@ set fileencodings=utf8,ucs-bom,gbk,cp936,gb2312,gb18030
 if has("gui_running")
     let system = system('uname -s')
     if system == "Darwin\n"
-        set guifont=Droid\ Sans\ Mono\ Nerd\ Font\ Complete:h18 " 设置字体
+        set guifont=Droid\ Sans\ Mono\ Nerd\ Font\ Complete:h17 " 设置字体
     else
-        set guifont=DroidSansMono\ Nerd\ Font\ Regular\ 18      " 设置字体
+        set guifont=DroidSansMono\ Nerd\ Font\ Regular\ 17      " 设置字体
     endif
     set guioptions-=m           " 隐藏菜单栏
     set guioptions-=T           " 隐藏工具栏
@@ -127,12 +129,12 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 卸载默认插件UnPlug
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:deregister(repo)
-  let repo = substitute(a:repo, '[\/]\+$', '', '')
-  let name = fnamemodify(repo, ':t:s?\.git$??')
-  call remove(g:plugs, name)
-endfunction
-command! -nargs=1 -bar UnPlug call s:deregister(<args>)
+" function! s:deregister(repo)
+  " let repo = substitute(a:repo, '[\/]\+$', '', '')
+  " let name = fnamemodify(repo, ':t:s?\.git$??')
+  " call remove(g:plugs, name)
+" endfunction
+" command! -nargs=1 -bar UnPlug call s:deregister(<args>)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 插件列表
@@ -144,9 +146,10 @@ Plug 'chxuan/vim-edit'
 Plug 'chxuan/change-colorscheme'
 Plug 'chxuan/prepare-code'
 Plug 'chxuan/vim-buffer'
-" Plug 'fholgado/minibufexpl.vim'
 Plug 'chxuan/vimplus-startify'
 Plug 'chxuan/tagbar'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'skywind3000/gutentags_plus'
 Plug 'skywind3000/asyncrun.vim'
@@ -158,35 +161,36 @@ Plug 'haya14busa/incsearch.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'scrooloose/nerdtree'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'Yggdroot/indentLine'
+Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'godlygeek/tabular'
-Plug 'dyng/ctrlsf.vim'
-Plug 'tpope/vim-fugitive'
-"Plug 'tpope/vim-surround'
-"Plug 'tpope/vim-commentary'
-"Plug 'tpope/vim-repeat'
-"Plug 'tpope/vim-endwise'
-Plug 'gcmt/wildfire.vim'
-Plug 'scrooloose/nerdcommenter'
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+if has('nvim') || has('patch-8.0.902')
+  Plug 'mhinz/vim-signify'
+else
+  Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+endif
+Plug 'godlygeek/tabular'
+" Plug 'dyng/ctrlsf.vim'
+" Plug 'tpope/vim-fugitive'
+" Plug 'junegunn/gv.vim'
+Plug 'gcmt/wildfire.vim'
+Plug 'preservim/nerdcommenter'
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'fholgado/minibufexpl.vim'
 Plug 'junegunn/vim-slash'
-Plug 'junegunn/gv.vim'
 Plug 'kana/vim-textobj-user'
-Plug 'kana/vim-textobj-indent'
-Plug 'kana/vim-textobj-syntax'
+" Plug 'kana/vim-textobj-indent'
+" Plug 'kana/vim-textobj-syntax'
 Plug 'kana/vim-textobj-function', { 'for':['c', 'cpp', 'vim', 'java'] }
 Plug 'sgur/vim-textobj-parameter'
 Plug 'Shougo/echodoc.vim'
 Plug 'terryma/vim-smooth-scroll'
 Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/indentpython.vim'
-Plug 'Yggdroot/indentLine'
-
+Plug 'sjl/gundo.vim'
+Plug 'dense-analysis/ale'
 " 加载自定义插件
 if filereadable(expand($HOME . '/.vimrc.custom.plugins'))
     source $HOME/.vimrc.custom.plugins
@@ -219,10 +223,10 @@ nnoremap <leader>pc :PlugClean<cr>
 " nnoremap <F11> :PlugClean<cr>
 
 " 分屏窗口移动
-nnoremap <c-j> <c-w>j
-nnoremap <c-k> <c-w>k
-nnoremap <c-h> <c-w>h
-nnoremap <c-l> <c-w>l
+nnoremap <s-j> <c-w>j
+nnoremap <s-k> <c-w>k
+nnoremap <s-h> <c-w>h
+nnoremap <s-l> <c-w>l
 
 " Wei Zhou
 set mouse=a
@@ -290,10 +294,12 @@ map <SPACE> <Plug>(wildfire-fuel)
 vmap <S-SPACE> <Plug>(wildfire-water)
 " 适用于哪些结对符
 let g:wildfire_objects = ["i'", 'i"', "i)", "i]", "i}", "i>", "ip"]
+" 定义快捷键在结对符之间跳转
+nmap <Leader>m %
 
 " quickfix窗口设置
 "代码编译
-nmap <Leader>m :wa<CR>::AsyncRun -raw make <cr>
+nmap <Leader>M :wa<CR>::AsyncRun make <cr>
 " set qf window at bottom
 :autocmd FileType qf wincmd J " 显示在quickfix窗口
 " 自动打开 quickfix window ，高度为 6
@@ -355,7 +361,7 @@ colorscheme onedark
 "let g:airline#extensions#tabline#buffer_nr_show = 1 
 let g:airline_theme="onedark"
 let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#enabled = 1
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
@@ -374,10 +380,15 @@ nnoremap <leader><leader>if :FormatIf<cr>
 " nnoremap <leader><leader>t dd :GenTryCatch<cr>
 " xnoremap <leader><leader>t d :GenTryCatch<cr>
 
+"vim-textobj-parameter
+ let g:vim_textobj_parameter_mapping = ';'
+
 " 替换函数。参数说明：
 " confirm：是否替换前逐一确认
 " wholeword：是否整词匹配
 " replace：被替换字符串
+
+" set argdo use arg command. e.g., :args *.php
 function! Replace(confirm, wholeword, replace) " 只支持单个文件内替换
     wa
     let flag = ''
@@ -393,7 +404,7 @@ function! Replace(confirm, wholeword, replace) " 只支持单个文件内替换
         let search .= expand('<cword>')
     endif
     let replace = escape(a:replace, '/\&~')
-    execute 'argdo %s/' . search . '/' . replace . '/' . flag . '| update'
+    execute '%s/' . search . '/' . replace . '/' . flag . '| update'
 endfunction
 " 不确认、非整词
 nnoremap <Leader>R :call Replace(0, 0, input('Replace '.expand('<cword>').' with: '))<CR>
@@ -406,20 +417,20 @@ nnoremap <Leader>rcw :call Replace(1, 1, input('Replace '.expand('<cword>').' wi
 nnoremap <Leader>rwc :call Replace(1, 1, input('Replace '.expand('<cword>').' with: '))<CR>
 
 " search word under cursor, the pattern is treated as regex, and enter normal mode directly
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR> /root/s2e-arm/libs2e /root/s2e-arm/libcpu /root/s2e-arm/libs2ecore /root/s2e-arm/libs2eplugins/src/s2e/Plugins
+noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg  %s ", expand("<cword>"))<CR> /root/s2e-arm/libs2e /root/s2e-arm/libcpu /root/s2e-arm/libs2ecore /root/s2e-arm/libs2eplugins/src/s2e/Plugins
 
 " search word under cursor, the pattern is treated as regex,
 " append the result to previous search results.
 noremap <C-G> :<C-U><C-R>=printf("Leaderf! rg --append -e %s ", expand("<cword>"))<CR>
 
 " search word under cursor literally only in current buffer
-noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg -F --current-buffer -e %s ", expand("<cword>"))<CR>
+" noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg -F --current-buffer -e %s ", expand("<cword>"))<CR>
 
 " search word under cursor literally in all listed buffers
-noremap <C-D> :<C-U><C-R>=printf("Leaderf! rg -F --all-buffers -e %s ", expand("<cword>"))<CR>
+" noremap <C-D> :<C-U><C-R>=printf("Leaderf! rg -F --all-buffers -e %s ", expand("<cword>"))<CR>
 
 " search visually selected text literally, don't quit LeaderF after accepting an entry
-xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --stayOpen -e %s ", leaderf#Rg#visual())<CR>
+" xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --stayOpen -e %s ", leaderf#Rg#visual())<CR>
 
 " recall last search. If the result window is closed, reopen it.
 noremap go :<C-U>Leaderf! rg --recall<CR>
@@ -427,14 +438,12 @@ noremap go :<C-U>Leaderf! rg --recall<CR>
 
 " search word under cursor in *.h and *.cpp files.
 noremap <Leader>a :<C-U><C-R>=printf("Leaderf! rg -e %s -g *.h -g *.cpp", expand("<cword>"))<CR>
-" the same as above
-noremap <Leader>a :<C-U><C-R>=printf("Leaderf! rg -e %s -g *.{h,cpp}", expand("<cword>"))<CR>
 
 " search word under cursor in cpp and java files.
-noremap <Leader>b :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -t java", expand("<cword>"))<CR>
+" noremap <Leader>b :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -t java", expand("<cword>"))<CR>
 
 " search word under cursor in cpp files, exclude the *.hpp files
-noremap <Leader>c :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -g !*.hpp", expand("<cword>"))<CR>
+" noremap <Leader>c :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -g !*.hpp", expand("<cword>"))<CR>
 
 " change-colorscheme
 "nnoremap <silent> <F9> :PreviousColorScheme<cr>
@@ -449,11 +458,29 @@ noremap <Leader>c :<C-U><C-R>=printf("Leaderf! rg -e %s -t cpp -g !*.hpp", expan
 " prepare-code
 let g:prepare_code_plugin_path = expand($HOME . "/.vim/plugged/prepare-code")
 
+
+" 调用 gundo 树
+nnoremap <F6> :GundoToggle<CR>
+" 设置环境保存项
+set sessionoptions="blank,buffers,globals,localoptions,tabpages,sesdir,folds,help,options,resize,winpos,winsize"
+" 调用 gundo 树
+nnoremap <Leader>ud :GundoToggle<CR>
+" 保存 undo 历史
+if has('persistent_undo') "check if your vim version supports it 
+	set undodir=~/.undo_history/ "directory where the undo files will be stored
+	set undofile  
+endif
+
+
+" 显示/隐藏 MiniBufExplorer 窗口
+map <F4> :MBEToggle<cr>
+" buffer 切换快捷键
 " vim-buffer
 nnoremap <silent> <C-Tab> :PreviousBuffer<cr>
 nnoremap <silent> <S-Tab> :NextBuffer<cr>
 nnoremap <silent> <C-d> :CloseBuffer<cr>
 nnoremap <silent> <C-D> :BufOnly<cr>
+
 
 " vim-edit
 nnoremap Y :CopyText<cr>
@@ -464,28 +491,44 @@ nnoremap <leader>r :ReplaceTo<space>
 " nerdtree
 nnoremap <silent> <F2> :NERDTreeToggle<cr>
 " 关闭vim时，如果打开的文件除了NERDTree没有其他文件时，它自动关闭
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " 当不带参数打开Vim时自动加载项目树
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-let g:NERDTreeFileExtensionHighlightFullName = 1
-let g:NERDTreeExactMatchHighlightFullName = 1
-let g:NERDTreePatternMatchHighlightFullName = 1
+" let g:NERDTreeFileExtensionHighlightFullName = 1
+" let g:NERDTreeExactMatchHighlightFullName = 1
+" let g:NERDTreePatternMatchHighlightFullName = 1
 let g:NERDTreeHighlightFolders = 1         
 let NERDTreeShowBookmarks = 1
 let g:NERDTreeHighlightFoldersFullName = 1 
 let g:NERDTreeDirArrowExpandable='▷'
 let g:NERDTreeDirArrowCollapsible='▼'
-let NERDTreeQuitOnOpen=1
+
+" nerdtree-git-plugin
+"let g:NERDTreeNodeDelimiter = "\u00a0"
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+            \ "Modified"  : "✹",
+            \ "Staged"    : "✚",
+            \ "Untracked" : "✭",
+            \ "Renamed"   : "➜",
+            \ "Unmerged"  : "═",
+            \ "Deleted"   : "✖",
+            \ "Dirty"     : "✗",
+            \ "Clean"     : "✔︎",
+            \ 'Ignored'   : '☒',
+            \ "Unknown"   : "?"
+            \ }
+
 
 " YCM
 " 如果不指定python解释器路径，ycm会自己搜索一个合适的(与编译ycm时使用的python版本匹配)
 " let g:ycm_server_python_interpreter = '/usr/bin/python2.7'
+set tags+=/usr/include/c++/7/stdcpp.tags
 let g:ycm_confirm_extra_conf = 0 
 let g:ycm_error_symbol = '✗'
 let g:ycm_warning_symbol = '✹'
 let g:ycm_seed_identifiers_with_syntax = 1 
-let g:ycm_complete_in_comments = 0 
+let g:ycm_complete_in_comments = 0
 let g:ycm_min_num_of_chars_for_completion=3
 set completeopt=menu,menuone
 let g:ycm_add_preview_to_completeopt = 0
@@ -495,6 +538,7 @@ inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
 let g:ycm_key_list_stop_completion = ['<C-y>', '<CR>']
 let g:ycm_complete_in_strings = 1 
 let g:ycm_collect_identifiers_from_tags_files = 1
+let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_semantic_triggers = {
             \   'c' : ['->', '.','re![_a-zA-z0-9]'],
             \   'objc' : ['->', '.', 're!\[[_a-zA-Z]+\w*\s', 're!^\s*[^\W\d]\w*\s',
@@ -512,23 +556,34 @@ let g:ycm_semantic_triggers = {
 			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
 			\ 'cs,lua,javascript': ['re!\w{2}'],
 			\ }
-let g:ycm_filetype_whitelist = { 
-			\ "c":1,
-			\ "cpp":1, 
-			\ "objc":1,
-            \ "h":1,
-            \ "py":1,
-            \ "hpp":1,
-			\ "sh":1,
-			\ "zsh":1,
-			\ "zimbu":1,
-			\ }
+
+let g:ycm_filetype_blacklist = { 
+	\ 'tagbar' : 1,
+	\ 'qf' : 1,
+	\ 'notes' : 1,
+	\ 'markdown' : 1,
+	\ 'unite' : 1,
+	\ 'text' : 1,
+	\ 'vimwiki' : 1,
+	\ 'pandoc' : 1,
+	\ 'infolog' : 1,
+	\ 'mail' : 1,
+\ }
+
+
 nnoremap <leader>fd :YcmCompleter GoToDeclaration<cr>
 " 已经使用cpp-mode插件提供的转到函数实现的功能
 nnoremap <leader>fe :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>fi :YcmCompleter GoToInclude<cr>
 nnoremap <leader>ff :YcmCompleter FixIt<cr>
 nmap <F5> :YcmDiags<cr>
+
+" mapping
+" inoremap <expr> <CR>       pumvisible()?"\<C-Y>":"\<CR>"
+inoremap <expr> <C-J>      pumvisible()?"\<PageDown>\<C-N>\<C-P>":"\<C-X><C-O>"
+inoremap <expr> <C-K>      pumvisible()?"\<PageUp>\<C-P>\<C-N>":"\<C-K>"
+inoremap <expr> <C-U>      pumvisible()?"\<C-E>":"\<C-U>" 
+
 
 " tagbar
 let g:tagbar_width = 30
@@ -544,19 +599,6 @@ let g:EasyMotion_smartcase = 1
 map <leader>w <Plug>(easymotion-bd-w)
 nmap <leader>w <Plug>(easymotion-overwin-w)
 
-" nerdtree-git-plugin
-let g:NERDTreeIndicatorMapCustom = {
-            \ "Modified"  : "✹",
-            \ "Staged"    : "✚",
-            \ "Untracked" : "✭",
-            \ "Renamed"   : "➜",
-            \ "Unmerged"  : "═",
-            \ "Deleted"   : "✖",
-            \ "Dirty"     : "✗",
-            \ "Clean"     : "✔︎",
-            \ 'Ignored'   : '☒',
-            \ "Unknown"   : "?"
-            \ }
 
 " LeaderF
 nnoremap <leader>f :LeaderfFile .<cr>
@@ -582,11 +624,15 @@ noremap <silent> <S-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
 noremap <silent> <S-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
 " noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
 " noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+" 左右滑动
+" 向左
+nmap <F7> 10zh
+imap <F7> <ESC>10zhi
+" 向右
+nmap <F8> 10zl
+imap <F8> <ESC>10zli
 
-" gv
-nnoremap <leader>g :GV<cr>
-nnoremap <leader>G :GV!<cr>
-" nnoremap <leader>gg :GV?<cr>
+
 
 " 加载自定义配置
 if filereadable(expand($HOME . '/.vimrc.custom.config'))
