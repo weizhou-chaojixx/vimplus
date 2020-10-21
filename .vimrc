@@ -36,10 +36,12 @@ set ruler                " 总是显示光标位置
 set laststatus=2         " 总是显示状态栏
 set number               " 开启行号显示
 set cursorline           " 高亮显示当前行
+set shell=sh
 " set whichwrap=b,s,<,>,[,] " 光标从行首和行末时可以跳到另一行去
 set mouse=a "使用鼠标
 set ttimeoutlen=0        " 设置<ESC>键响应时间
 "set virtualedit=block,onemore   " 允许光标出现在最后一个字符的后面
+set iskeyword +=_  " add _ to vim keyword
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 代码缩进和排版
@@ -158,19 +160,15 @@ Plug 'Yggdroot/LeaderF'
 Plug 'mileszs/ack.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
-Plug 'jiangmiao/auto-pairs'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'jiangmiao/auto-pairs'
 Plug 'Yggdroot/indentLine'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ryanoasis/vim-devicons'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-if has('nvim') || has('patch-8.0.902')
-  Plug 'mhinz/vim-signify'
-else
-  Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-endif
+Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
 Plug 'godlygeek/tabular'
 " Plug 'dyng/ctrlsf.vim'
 " Plug 'tpope/vim-fugitive'
@@ -191,6 +189,8 @@ Plug 'rhysd/clever-f.vim'
 Plug 'vim-scripts/indentpython.vim'
 Plug 'sjl/gundo.vim'
 Plug 'dense-analysis/ale'
+Plug 'Shougo/echodoc.vim'
+Plug 'Chiel92/vim-autoformat'
 " 加载自定义插件
 if filereadable(expand($HOME . '/.vimrc.custom.plugins'))
     source $HOME/.vimrc.custom.plugins
@@ -289,6 +289,7 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "
 let g:UltiSnipsExpandTrigger="<leader><tab>"
 "let g:UltiSnipsJumpForwardTrigger="<leader><tab>"
 "let g:UltiSnipsJumpBackwardTrigger="<leader><s-tab>"
+
 " 快速选中结对符中的内容快捷键
 map <SPACE> <Plug>(wildfire-fuel)
 vmap <S-SPACE> <Plug>(wildfire-water)
@@ -578,7 +579,7 @@ nnoremap <leader>fi :YcmCompleter GoToInclude<cr>
 nnoremap <leader>ff :YcmCompleter FixIt<cr>
 nmap <F5> :YcmDiags<cr>
 
-" mapping
+" ycm mapping
 " inoremap <expr> <CR>       pumvisible()?"\<C-Y>":"\<CR>"
 inoremap <expr> <C-J>      pumvisible()?"\<PageDown>\<C-N>\<C-P>":"\<C-X><C-O>"
 inoremap <expr> <C-K>      pumvisible()?"\<PageUp>\<C-P>\<C-N>":"\<C-K>"
@@ -632,7 +633,49 @@ imap <F7> <ESC>10zhi
 nmap <F8> 10zl
 imap <F8> <ESC>10zli
 
+" ALE
+let g:ale_linters = {
+  \   'csh': ['shell'],
+  \   'zsh': ['shell'],
+  \   'go': ['gofmt', 'golint'],
+  \   'python': ['flake8', 'mypy', 'pylint'],
+  \   'c': ['clang'],
+  \   'cpp': ['clang++'],
+  \   'text': [],
+  \}
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = "\ue009\ue009"
+let g:ale_sign_warning = '⚡'
+let g:ale_linters_explicit = 1
+let g:ale_completion_delay = 300
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 200
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
 
+let g:ale_c_build_dir_names = ['build'] 
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++14'
+
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+hi! clear SpellBad
+hi! clear SpellCap
+hi! clear SpellRare
+hi! SpellBad gui=undercurl guisp=red
+hi! SpellCap gui=undercurl guisp=yellow
+hi! SpellRare gui=undercurl guisp=magenta
+
+
+nmap <silent> <leader>j :ALENext<cr>
+nmap <silent> <leader>k :ALEPrevious<cr>
+
+" echodoc
+set noshowmode
+let g:echodoc_enable_at_startup = 1
 
 " 加载自定义配置
 if filereadable(expand($HOME . '/.vimrc.custom.config'))

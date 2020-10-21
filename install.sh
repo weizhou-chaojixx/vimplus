@@ -173,8 +173,8 @@ function compile_vim_on_ubuntu()
     ./configure --with-features=huge \
         --enable-multibyte \
         --enable-rubyinterp \
-        --enable-pythoninterp \
-        --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
+        --enable-python3interp=yes \
+        --with-python-config-dir=/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu \
         --enable-perlinterp \
         --enable-luainterp \
         --enable-gui=gtk2 \
@@ -196,8 +196,10 @@ function compile_vim_on_debian()
     ./configure --with-features=huge \
         --enable-multibyte \
         --enable-rubyinterp \
-        --enable-pythoninterp \
+        --enable-pythoninterp=dynamic \
         --with-python-config-dir=/usr/lib/python2.7/config-x86_64-linux-gnu \
+        --enable-python3interp=dynamic \
+        --with-python3-config-dir=/usr/lib/python3.6/config-3.6m-x86_64-linux-gnu \
         --enable-perlinterp \
         --enable-luainterp \
         --enable-gui=gtk2 \
@@ -271,11 +273,11 @@ function install_prepare_software_on_ubuntu()
 
     sudo apt-get install -y exuberant-ctags build-essential python python-dev python3-dev fontconfig libfile-next-perl ack-grep git
 
-    if [ $version -ge 18 ];then
-        sudo apt-get install -y vim
-    else
-        compile_vim_on_ubuntu
-    fi
+    #if [ $version -ge 18 ];then
+        #sudo apt-get install -y vim
+    #else
+    compile_vim_on_ubuntu
+    #fi
 }
 
 # 安装ubuntu系必备软件
