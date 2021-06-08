@@ -123,8 +123,8 @@ if has("gui_running")
     set guioptions-=r           " 隐藏右侧滚动条
     set guioptions-=b           " 隐藏底部滚动条
     set showtabline=0           " 隐藏Tab栏
-    "set guicursor=n-v-c:ver5    " 设置光标为竖线
-    set lines=999 columns=999   " 启动 vim 时自动最大化
+    " set guicursor=n-v-c:ver5    " 设置光标为竖线
+    " set lines=999 columns=999   " 启动 vim 时自动最大化
 
 endif
 
@@ -156,7 +156,7 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'skywind3000/gutentags_plus'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'Valloric/YouCompleteMe'
-Plug 'Yggdroot/LeaderF'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
 Plug 'mileszs/ack.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
@@ -179,6 +179,7 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'fholgado/minibufexpl.vim'
 Plug 'junegunn/vim-slash'
 Plug 'kana/vim-textobj-user'
+Plug 'bronson/vim-trailing-whitespace'
 " Plug 'kana/vim-textobj-indent'
 " Plug 'kana/vim-textobj-syntax'
 Plug 'kana/vim-textobj-function', { 'for':['c', 'cpp', 'vim', 'java'] }
@@ -219,8 +220,6 @@ nnoremap <F12> :source $MYVIMRC<cr>
 nnoremap <leader>pi :PlugInstall<cr>
 nnoremap <leader>pu :PlugUpdate<cr>
 nnoremap <leader>pc :PlugClean<cr>
-" nnoremap <F10> :PlugUpdate<cr>
-" nnoremap <F11> :PlugClean<cr>
 
 " 分屏窗口移动
 nnoremap <s-j> <c-w>j
@@ -256,8 +255,8 @@ vnoremap <C-x> "+x
 " 设置快捷键将系统剪贴板内容粘贴至 vim
 vnoremap <C-v>  "+p
 " <C-;> 可以选择5次之内缓存复制
-nmap <C-v>  "+p
-imap <C-v> <Esc>"+p<Esc>a
+nmap <C-v>  "+pgv
+imap <C-v> <Esc>"+p
 " 定义快捷键关闭当前分割窗口
 nmap <leader>q :q<CR>
 
@@ -282,6 +281,11 @@ set nofoldenable
 " 将系统剪切板内容粘贴到vim
 " vnoremap <leader><leader>p "+p
 
+" remove trail space
+ map <leader><space> :FixWhitespace<cr>
+let g:extra_whitespace_ignored_filetypes = ['unite', 'mkd']
+
+
 " 打开文件自动定位到最后编辑的位置
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
 " UltiSnips 模板补全 
@@ -293,10 +297,27 @@ let g:UltiSnipsExpandTrigger="<leader><tab>"
 " 快速选中结对符中的内容快捷键
 map <SPACE> <Plug>(wildfire-fuel)
 vmap <S-SPACE> <Plug>(wildfire-water)
+nmap <leader>s <Plug>(wildfire-quick-select)
+
+" 调整缩进后自动选中，方便再次操作
+vnoremap < <gv
+vnoremap > >gv
+
 " 适用于哪些结对符
 let g:wildfire_objects = ["i'", 'i"', "i)", "i]", "i}", "i>", "ip"]
 " 定义快捷键在结对符之间跳转
 nmap <Leader>m %
+" cancel auto-pair line
+let g:AutoPairsMapCR = 0
+
+
+" vif	选中函数内容
+" dif	删除函数内容
+" cif	改写函数内容
+" vaf	选中函数内容（包括函数名 花括号）
+" daf	删除函数内容（包括函数名 花括号）
+" caf	改写函数内容（包括函数名 花括号）
+" fa	查找字母a，然后再按f键查找下一个
 
 " quickfix窗口设置
 "代码编译
@@ -309,7 +330,7 @@ let g:asyncrun_open = 6
 " 任务结束时候响铃提醒
 let g:asyncrun_bell = 1
 
-" 设置 F10 打开/关闭 Quickfix 窗口
+" 设置 F1 打开/关闭 Quickfix 窗口
 nnoremap <F1> :call asyncrun#quickfix_toggle(6)<cr>
 
 " gtags
@@ -405,7 +426,7 @@ function! Replace(confirm, wholeword, replace) " 只支持单个文件内替换
         let search .= expand('<cword>')
     endif
     let replace = escape(a:replace, '/\&~')
-    execute '%s/' . search . '/' . replace . '/' . flag . '| update'
+    execute 'bufdo %s/' . search . '/' . replace . '/' . flag . '| update'
 endfunction
 " 不确认、非整词
 nnoremap <Leader>R :call Replace(0, 0, input('Replace '.expand('<cword>').' with: '))<CR>
@@ -418,7 +439,9 @@ nnoremap <Leader>rcw :call Replace(1, 1, input('Replace '.expand('<cword>').' wi
 nnoremap <Leader>rwc :call Replace(1, 1, input('Replace '.expand('<cword>').' with: '))<CR>
 
 " search word under cursor, the pattern is treated as regex, and enter normal mode directly
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg  %s ", expand("<cword>"))<CR> /root/s2e-arm/libs2e /root/s2e-arm/libcpu /root/s2e-arm/libs2ecore /root/s2e-arm/libs2eplugins/src/s2e/Plugins
+noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -F %s ", expand("<cword>"))<CR> /root/s2e-arm/libs2e /root/s2e-arm/libcpu /root/s2e-arm/libs2ecore /root/s2e-arm/libs2eplugins/src/s2e/Plugins
+
+noremap <F5> :Leaderf rg --recall
 
 " search word under cursor, the pattern is treated as regex,
 " append the result to previous search results.
@@ -577,7 +600,7 @@ nnoremap <leader>fd :YcmCompleter GoToDeclaration<cr>
 nnoremap <leader>fe :YcmCompleter GoToDefinition<CR>
 nnoremap <leader>fi :YcmCompleter GoToInclude<cr>
 nnoremap <leader>ff :YcmCompleter FixIt<cr>
-nmap <F5> :YcmDiags<cr>
+" nmap <F5> :YcmDiags<cr>
 
 " ycm mapping
 " inoremap <expr> <CR>       pumvisible()?"\<C-Y>":"\<CR>"
@@ -621,10 +644,10 @@ nnoremap <leader>l :Tab /\|<cr>
 nnoremap <leader>= :Tab /=<cr>
 
 " vim-smooth-scroll
-noremap <silent> <S-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
-noremap <silent> <S-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
-" noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
-" noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+noremap <silent> <S-u> :call smooth_scroll#up(&scroll, 10, 2)<CR>
+noremap <silent> <S-d> :call smooth_scroll#down(&scroll, 10, 2)<CR>
+" noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 10, 4)<CR>
+" noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 10, 4)<CR>
 " 左右滑动
 " 向左
 nmap <F7> 10zh
@@ -647,9 +670,9 @@ let g:ale_sign_column_always = 1
 let g:ale_sign_error = "\ue009\ue009"
 let g:ale_sign_warning = '⚡'
 let g:ale_linters_explicit = 1
-let g:ale_completion_delay = 300
+let g:ale_completion_delay = 150
 let g:ale_echo_delay = 20
-let g:ale_lint_delay = 200
+let g:ale_lint_delay = 100
 let g:ale_echo_msg_format = '[%linter%] %code: %%s'
 let g:ale_lint_on_text_changed = 'normal'
 let g:ale_lint_on_insert_leave = 1
@@ -673,6 +696,9 @@ hi! SpellRare gui=undercurl guisp=magenta
 nmap <silent> <leader>j :ALENext<cr>
 nmap <silent> <leader>k :ALEPrevious<cr>
 
+
+let g:formatterpath = ['$S2EDIR/build/llvm-release/bin/']
+noremap <F10> :Autoformat<CR>
 " echodoc
 set noshowmode
 let g:echodoc_enable_at_startup = 1
